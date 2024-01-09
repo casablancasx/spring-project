@@ -2,9 +2,11 @@ package com.danilochaves.project.services;
 
 import com.danilochaves.project.entities.User;
 import com.danilochaves.project.repositories.UserRepository;
+import com.danilochaves.project.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.ReadOnlyFileSystemException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +21,7 @@ public class UserService {
 
     public User findById(Long id){
         Optional<User> obj = repository.findById(id);
-        return obj.get();
+        return obj.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     public User insert(User obj){
