@@ -2,8 +2,11 @@ package com.danilochaves.project.services;
 
 import com.danilochaves.project.entities.User;
 import com.danilochaves.project.repositories.UserRepository;
+import com.danilochaves.project.services.exceptions.DataBaseException;
 import com.danilochaves.project.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.ReadOnlyFileSystemException;
@@ -28,7 +31,13 @@ public class UserService {
         return repository.save(obj);
     }
     public void delete(Long id){
-        repository.deleteById(id);
+        try{
+            repository.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
+            throw new ResourceNotFoundException(id);
+        }catch (DataIntegrityViolationException e){
+            throw new DataBaseException(e.getMessage());
+        }
     }
 
     public User update(Long id, User obj){
